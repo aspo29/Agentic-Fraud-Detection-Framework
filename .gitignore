@@ -1,53 +1,46 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-venv/
-ENV/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# Environment
+# ── Environment Variables ───────────────────────────────────────────────────
 .env
 .env.local
 .env.*.local
 
-# Logs
-logs/
-*.log
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.tox/
+.nox/
+.cache/
+nosetests.xml
+coverage.xml
+*.prototxt
+*.pickle
+*.h5
 
-# Docker
-.dockerignore
+# ── Virtual Environments ────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+lib/
+bin/
+include/
+Scripts/
 
-# MLflow
-mlruns/
-artifacts/
+# ── Database ────────────────────────────────────────────────────────────────
+# Ignore the SQLite database to keep project clean, but keep the schema
+*.db
+*.db-journal
+*.sqlite3
+
+# ── IDE & OS ────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
