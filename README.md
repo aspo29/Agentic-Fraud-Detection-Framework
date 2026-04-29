@@ -1,66 +1,3 @@
-core/
-│
-├── orchestrator/
-│   ├── orchestrator.py        # main entry: runs full fraud pipeline
-│   ├── pipeline.py            # step execution logic (async workflow)
-│   ├── context.py             # TransactionContext (shared object)
-│   ├── router.py              # decides which agents to trigger
-│   └── executor.py            # parallel execution (async / threading)
-│
-├── agents/
-│   ├── base/
-│   │   ├── base_agent.py      # abstract agent interface
-│   │   └── agent_result.py    # standard output format (score, reason)
-│   │
-│   ├── velocity_agent/
-│   │   ├── agent.py
-│   │   ├── rules.py
-│   │   ├── redis_store.py
-│   │   └── lua_scripts/
-│   │       └── velocity.lua
-│   │
-│   ├── geo_agent/
-│   │   ├── agent.py
-│   │   ├── distance_calc.py
-│   │   ├── ip_lookup.py
-│   │   └── rules.py
-│   │
-│   ├── behaviour_agent/
-│   │   ├── agent.py
-│   │   ├── profiler.py
-│   │   ├── feature_extractor.py
-│   │   └── baseline_model.py
-│   │
-│   └── synthesis_agent/
-│       ├── agent.py
-│       ├── weight_config.py
-│       └── risk_fusion.py
-│
-├── decision_engine/
-│   ├── scorer.py              # weighted scoring logic
-│   ├── policy_engine.py       # business rules (ALLOW/BLOCK/REVIEW)
-│   ├── thresholds.py
-│   └── decision_model.py      # optional ML model
-│
-├── fraud_engine/
-│   ├── rules_engine.py        # shared rule evaluation system
-│   ├── risk_utils.py          # normalization, scaling
-│   ├── anomaly_utils.py       # reusable anomaly detection helpers
-│   ├── feature_store.py       # shared feature logic
-│   └── constants.py
-│
-├── registry/
-│   ├── agent_registry.py      # registers all agents dynamically
-│   └── dependency_map.py      # defines agent dependencies/order
-│
-├── models/
-│   ├── transaction_model.py   # internal transaction object
-│   ├── risk_model.py          # risk score schema
-│   └── agent_model.py         # agent input/output contracts
-│
-└── __init__.py
-
-
 ### Testing of the agents 
 
 # manual testing 
@@ -73,24 +10,32 @@ PYTHONPATH=. pytest -v
 PYTHONPATH=. pytest -v -s  to have result with value 
 PYTHONPATH=. pytest -v -s  test/test_velocity_performance.py
 
-### Architecture of 
-        Transaction
-                ↓
-        Orchestrator
-                ↓
-    Router → selects VelocityAgent
-                ↓
-    Executor (async parallel)
-                 ↓
-         VelocityAgent (Redis + Lua)
-                ↓
-        AgentResult(score + reason)
-                ↓
-        Synthesis Agent (future)
-                ↓
-    Decision Engine (BLOCK / REVIEW / ALLOW)
+### dataflow pipeline diagram 
+                        transactions.raw (Kafka)
+                                  ↓
+                        Orchestrator Consumer
+                                  ↓
+                        Router Service
+                                 ↓
+                        Executor Pool (async workers)
+                                 ↓
+                        VelocityAgent  ↔ Redis (sliding window)
+                                 ↓
+                        GeoAgent
+                                ↓
+                        BehavioralAgent
+                                ↓
+                        SyntheticAgent (fusion of all agent scores)
+                                ↓
+                        Synthesis / Aggregation Layer
+                                ↓
+                        Decision Engine
+                                 ↓
+                        fraud.decision (Kafka)
+                               ↓
+                        BLOCK / REVIEW / ALLOW
 
-
+##file structure 
 core/
 │
 ├── orchestrator/
