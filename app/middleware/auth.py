@@ -1,4 +1,4 @@
-from fastapi import Request, HTTPException, status
+from fastapi import Request, HTTPException, status, Depends
 from fastapi.security import APIKeyHeader
 from typing import Callable
 from app.config.settings import settings
@@ -11,7 +11,7 @@ class APIKeyMiddleware:
     """Middleware for API key authentication."""
     
     @staticmethod
-    async def verify_api_key(api_key_header_value: str = None) -> str:
+    async def verify_api_key(api_key_header_value: str = Depends(api_key_header)) -> str:
         """Verify API key from request header.
         
         Args:
