@@ -11,3 +11,7 @@ mlflow==2.10.2
 httpx==0.26.0
 pytest==7.4.4
 pytest-asyncio==0.23.3
+redis>=4.0.0
+requests>=2.0.0
+bcrypt>=3.0.0
+fakeredis>=2.0.0
