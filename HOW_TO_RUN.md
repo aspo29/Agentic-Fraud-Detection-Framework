@@ -43,7 +43,7 @@ docker-compose up -d
 **Services Started:**
 - **Redis** (Port `6379`): Used by Velocity and Geo agents for sliding windows.
 - **Kafka & Zookeeper** (Port `9092`): Event streaming for transactions.
-- **MLflow** (Port `5000`): Model lifecycle tracking.
+- **MLflow** (Port `5001`): Model lifecycle tracking.
 - **Neo4j** (Port `7687` / `7474`): Graph database for account linkage.
 - **PostgreSQL**: Backend database for MLflow.
 
@@ -97,7 +97,22 @@ The API is now live at:
 
 ---
 
-## Step 5: Run the OTP Interlock API (Dual-Path)
+## Step 5: Run the Agentic Worker (Pipeline Consumer)
+
+The API publishes transactions to Kafka, but a background worker is needed to actually run the multi-agent orchestration and return a verdict.
+
+```bash
+# Open a NEW terminal window and activate the environment
+source venv/bin/activate
+export PYTHONPATH=$(pwd)
+
+# Start the background agent worker
+python worker.py
+```
+
+---
+
+## Step 6: Run the OTP Interlock API (Dual-Path)
 
 Open a **new terminal window**, activate the virtual environment, and start the OTP microservice.
 
@@ -112,7 +127,7 @@ python api/server.py
 
 ---
 
-## Step 6: Test the System
+## Step 7: Test the System
 
 You can test the end-to-end flow using `curl` or the Swagger UI.
 
