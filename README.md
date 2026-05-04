@@ -42,9 +42,49 @@ This is the implementation of **FD-60 (TASK-17.1): Transaction Processing FastAP
 │   └── config/
 │       ├── __init__.py
 │       └── settings.py             # Application settings
+├── core/                            # Agent execution pipeline
+│   ├── orchestrator/
+│   ├── infrastructure/
+│   ├── agents/
+│   │   ├── velocity_agent/
+│   │   ├── geo_agent/
+│   ├── decision_engine/
+│   ├── fraud_engine/
+│   ├── registry/
+│   └── models/
 └── tests/
     ├── __init__.py
-    └── test_transaction_api.py     # Test suite
+    ├── test_transaction_api.py     # API Test suite
+    ├── test_velocity_agent.py      # Agent Test suite
+    └── test_geo_agent.py
+```
+
+## Dataflow Pipeline
+
+```
+                        transactions.raw (Kafka)
+                                  ↓
+                        Orchestrator Consumer
+                                  ↓
+                        Router Service
+                                 ↓
+                        Executor Pool (async workers)
+                                 ↓
+                        VelocityAgent  ↔ Redis (sliding window)
+                                 ↓
+                        GeoAgent
+                                ↓
+                        BehavioralAgent
+                                ↓
+                        SyntheticAgent (fusion of all agent scores)
+                                ↓
+                        Synthesis / Aggregation Layer
+                                ↓
+                        Decision Engine
+                                 ↓
+                        fraud.decision (Kafka)
+                               ↓
+                        BLOCK / REVIEW / ALLOW
 ```
 
 ## API Specification
@@ -162,17 +202,6 @@ Returns service health status (no authentication required).
 }
 ```
 
-## Acceptance Criteria - COMPLETED ✅
-
-- ✅ Endpoint returns `{decision, risk_score, agent_scores, latency_ms}` with HTTP 200
-- ✅ Invalid payload returns 422 with field-level errors
-- ✅ API key header is validated with 401 on missing/wrong key
-- ✅ Swagger UI is accessible at `/docs`
-- ✅ Processes within 800ms p95 latency requirement
-- ✅ Publishes transactions to Kafka
-- ✅ Polls for Synthesis decision via Kafka
-- ✅ Returns mock decision if Kafka unavailable
-
 ## Setup & Installation
 
 ### Prerequisites
@@ -273,6 +302,9 @@ pytest tests/test_transaction_api.py::TestTransactionEndpoint::test_valid_transa
 
 # Run with coverage
 pytest tests/ --cov=app --cov-report=html
+
+# Test velocity agent
+PYTHONPATH=. pytest -v -s test/test_velocity_performance.py
 ```
 
 ### Manual Testing with curl
@@ -415,6 +447,8 @@ If Kafka is unavailable or times out:
 3. **FD-28**: Expand test suite with integration tests (≥80% coverage target)
 4. **FD-29**: Integrate MLflow tracking and structured logging
 5. **FD-30**: Finalize Docker deployment configuration
+6. Fallback in process()
+7. Real Redis wiring
 
 ## Contributing
 
@@ -426,9 +460,3 @@ If Kafka is unavailable or times out:
 ## License
 
 TBD
-
----
-
-**Task Status**: ✅ COMPLETED  
-**Branch**: `FD-60-task-17-1-implement-transaction-processing-fastap`  
-**Last Updated**: April 17, 2024
