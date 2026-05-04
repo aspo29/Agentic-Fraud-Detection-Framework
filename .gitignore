@@ -1,0 +1,28 @@
+# Virtual Environment
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+# Data & Models
+data/*.csv
+artifacts/models/*.pth
+artifacts/models/*.joblib
+mlruns/
+models/*.pth
+models/*.joblib
+
+# Databases
+*.db
+*.sqlite
+
+# Environment
+.env
+
+# Logs
+*.log
+
+# Docker volumes
+neo4j-data/
+postgres-data/
+mlflow-artifacts/

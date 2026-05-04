@@ -10,10 +10,9 @@ logger = logging.getLogger("agent-worker")
 async def run_worker():
     logger.info("Starting Agentic Fraud Detection Worker...")
     
-    # Initialize Route Engine
-    # Note: RouteEngine uses 'localhost' for redis/kafka by default in its __init__
-    # We might need to adjust this if running inside Docker, but for local terminal it's fine.
+    logger.info("Initializing Route Engine...")
     engine = RouteEngine()
+    logger.info("Route Engine initialized successfully.")
     
     # Initialize Kafka Consumer
     consumer = KafkaConsumer(

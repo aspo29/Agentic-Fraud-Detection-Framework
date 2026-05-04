@@ -156,7 +156,7 @@ If the synthesis agent flags the transaction as suspicious, you can trigger the 
 
 ```bash
 # Request OTP
-curl -X POST http://localhost:8001/api/v1/otp/request \
+curl -X POST http://localhost:8001/api/v1/otp/send \
   -H "Content-Type: application/json" \
   -d '{
     "user_id": "CUST-SITA789",
@@ -165,15 +165,21 @@ curl -X POST http://localhost:8001/api/v1/otp/request \
     "phone_number": "+9779800000000"
   }'
 
-# Verify OTP (You will see the generated OTPs in the server logs)
+# Verify OTP
+# (In production, the codes are sent to your phone/email. Ensure credentials are set in .env)
 curl -X POST http://localhost:8001/api/v1/otp/verify \
   -H "Content-Type: application/json" \
   -d '{
+    "user_id": "CUST-SITA789",
     "transaction_id": "TXN-TEST-001",
-    "email_otp": "123456",
-    "sms_otp": "654321"
+    "email_otp": "XXXXXX",
+    "sms_otp": "YYYYYY",
+    "phone_number": "+9779800000000"
   }'
 ```
+
+> [!IMPORTANT]
+> For the OTP Interlock to work in production, you must set your **SendGrid/Twilio/Sparrow** credentials in the `.env` file. If no credentials are provided, the service will raise a configuration error.
 
 ---
 

@@ -9,7 +9,11 @@ Responsibilities:
 """
 import logging
 import sys
+import os
 from contextlib import asynccontextmanager
+
+# Add project root to sys.path to allow importing 'config' and 'services'
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fastapi import FastAPI
 import uvicorn
